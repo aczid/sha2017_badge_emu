@@ -47,14 +47,13 @@ class Badge:
     BADGE_EINK_HEIGHT = 128
 
     badge_image_photo = None
-    badge_image = None
 
     def eink_init(self):
         self.emu.eink.place(x=27, y=32, width=self.BADGE_EINK_WIDTH, height=self.BADGE_EINK_HEIGHT)
 
     def display_picture(self, a, b):
-        self.badge_image_photo = photoimage = ImageTk.PhotoImage(file=self.pictures[a])
-        self.badge_image = self.emu.eink.create_image(148, 64, image=photoimage)
+        self.badge_image_photo = ImageTk.PhotoImage(file=self.pictures[a])
+        self.emu.eink.create_image(148, 64, image=self.badge_image_photo)
         self.emu.slow_eink_update()
 
     def power_init(self):
