@@ -7,7 +7,6 @@ iterate_max = 20
 
 # Calculate the mandelbrot sequence for the point c with start value z
 def iterate_mandelbrot(c, z = 0):
-    global iterate_max
     for n in xrange(iterate_max + 1):
         z = z*z +c
         if abs(z) > 2:
