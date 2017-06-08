@@ -359,7 +359,6 @@ if __name__ == "__main__":
         if len(argv) < 2:
             print "Usage: %s <demo.py>" % argv[0]
         else:
-	    l = locals()
 	    execfile(argv[1], globals(), globals())
 	    emu.interactive()
 
