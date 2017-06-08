@@ -343,10 +343,13 @@ if __name__ == "__main__":
     ugfx = Ugfx()
 
     def run(argv):
-        with file(argv[1],'r') as f:
-            script = f.read()
-            exec(script)
-            badge.run()
+        if len(argv) < 2:
+            print "Usage: %s <demo.py>" % argv[0]
+        else:
+            with file(argv[1],'r') as f:
+                script = f.read()
+                exec(script)
+                badge.run()
 
     sys.exit(run(sys.argv))
 
