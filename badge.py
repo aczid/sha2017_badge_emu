@@ -4,8 +4,10 @@ from PIL import ImageTk, Image
 import time
 
 class Emulator:
-    eink = None
     t = None
+    canvas = None
+    background_image = None
+    eink = None
     def __init__(self):
 
         self.t = Tk()
@@ -23,6 +25,9 @@ class Emulator:
     def slow_eink_update(self):
         time.sleep(0.5)
         self.t.update()
+
+    def interactive(self):
+        self.t.mainloop()
 
 class Badge:
 
@@ -272,7 +277,7 @@ class Ugfx:
         self.fill_circle(60, 60, 10, badge.BLACK)
         self.flush()
 
-class esp:
+class Esp:
     def flash_read(self, offset_in):
         pass
 
@@ -305,10 +310,10 @@ class esp:
 
     pass
 
-class machine:
+class Machine:
     pass
 
-class network:
+class Network:
     def WLAN(self, mode):
         pass
 
@@ -343,6 +348,9 @@ if __name__ == "__main__":
     emu = Emulator()
     badge = Badge(emu)
     ugfx = Ugfx(emu)
+    esp = Esp()
+    machine = Machine()
+    network = Network()
 
     def run(argv):
         if len(argv) < 2:
@@ -351,7 +359,7 @@ if __name__ == "__main__":
             with file(argv[1],'r') as f:
                 script = f.read()
                 exec(script)
-                emu.t.mainloop()
+                emu.interactive()
 
     sys.exit(run(sys.argv))
 
