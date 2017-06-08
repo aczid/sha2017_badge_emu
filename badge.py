@@ -348,6 +348,7 @@ class Network:
         pass
 
 if __name__ == "__main__":
+    import sys
     emu = Emulator()
     badge = Badge(emu)
     ugfx = Ugfx(emu)
