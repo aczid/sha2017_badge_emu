@@ -209,8 +209,8 @@ class Ugfx:
             self.string(begin, y0, string, font, color)
 
     def pixel(self, x, y, color):
-	self.emu.eink.create_line(x, y, x + 1, y)
-        self.emu.slow_eink_update()
+	self.emu.eink.create_line(x, y, x + 1, y, fill=color2string(color))
+        #self.emu.slow_eink_update()
 
     def line(self, x0, y0, x1, y1, color):
 	self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color))
