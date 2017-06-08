@@ -1,6 +1,28 @@
 from Tkinter import *
 import tkFont
 from PIL import ImageTk, Image
+import time
+
+class Emulator:
+    eink = None
+    t = None
+    def __init__(self):
+
+        self.t = Tk()
+        self.t.title("SHA2017 badge")
+
+        frame = Frame(self.t)
+        frame.pack(fill=BOTH, expand=YES)
+        self.canvas = Canvas(frame, width=350, height=322, bg="black", highlightthickness=0)
+        self.background_image = ImageTk.PhotoImage(file="badge_background.png")
+        self.canvas.create_image(175, 161, image=self.background_image)
+        self.canvas.pack(fill=BOTH, expand=YES)
+
+        self.eink = Canvas(frame)
+
+    def slow_eink_update(self):
+        time.sleep(0.5)
+        self.t.update()
 
 class Badge:
 
@@ -19,16 +41,13 @@ class Badge:
     BADGE_EINK_WIDTH = 296
     BADGE_EINK_HEIGHT = 128
 
-    def init(self):
-        pass
-
     def eink_init(self):
-        eink.place(x=27, y=32, width=self.BADGE_EINK_WIDTH, height=self.BADGE_EINK_HEIGHT)
+        self.emu.eink.place(x=27, y=32, width=self.BADGE_EINK_WIDTH, height=self.BADGE_EINK_HEIGHT)
 
     def display_picture(self, a, b):
         photoimage = ImageTk.PhotoImage(file=self.pictures[a])
-        eink.create_image(148, 64, image=photoimage)
-        slow_eink_update()
+        self.emu.eink.create_image(148, 64, image=photoimage)
+        self.emu.slow_eink_update()
 
     def power_init(self):
         pass
@@ -46,53 +65,45 @@ class Badge:
         x = 45
         y = 5
         for i in range(6):
-            self.leds.append(canvas.create_rectangle(x, y, x+18, y+18, fill='grey'))
+            self.leds.append(self.emu.canvas.create_rectangle(x, y, x+18, y+18, fill='grey'))
             x+=48
         pass
 
     def led_set(self, led, hexcolor):
-        canvas.itemconfig(self.leds[led], fill=hexcolor)
-        t.update()
-
-    def run(self):
-        t.mainloop()
+        self.emu.canvas.itemconfig(self.leds[led], fill=hexcolor)
+        self.emu.t.update()
 
     def button_one_callback(self):
         print "Button 1 pressed!"
 
     def buttons_init(self):
-        button_a = Button(canvas, text="A", command=self.button_one_callback)
+        button_a = Button(self.emu.canvas, text="A", command=self.button_one_callback)
         button_a.place(x=298, y=192)
-        button_b = Button(canvas, text="B", command=self.button_one_callback)
+        button_b = Button(self.emu.canvas, text="B", command=self.button_one_callback)
         button_b.place(x=258, y=226)
 
-        button_select = Button(canvas, text="select", command=self.button_one_callback)
+        button_select = Button(self.emu.canvas, text="select", command=self.button_one_callback)
         button_select.place(x=140, y=270)
 
-        button_select = Button(canvas, text="start", command=self.button_one_callback)
+        button_select = Button(self.emu.canvas, text="start", command=self.button_one_callback)
         button_select.place(x=210, y=270)
 
-        button_up = Button(canvas, text="^", command=self.button_one_callback)
+        button_up = Button(self.emu.canvas, text="^", command=self.button_one_callback)
         button_up.place(x=60, y=190)
 
-        button_down = Button(canvas, text="v", command=self.button_one_callback)
+        button_down = Button(self.emu.canvas, text="v", command=self.button_one_callback)
         button_down.place(x=60, y=260)
 
-        button_left = Button(canvas, text="<", command=self.button_one_callback)
+        button_left = Button(self.emu.canvas, text="<", command=self.button_one_callback)
         button_left.place(x=20, y=225)
 
-        button_right = Button(canvas, text=">", command=self.button_one_callback)
+        button_right = Button(self.emu.canvas, text=">", command=self.button_one_callback)
         button_right.place(x=90, y=225)
 
-    def __init__(self):
+    def __init__(self, emulator=None):
+        self.emu=emulator
         self.leds_init()
         self.buttons_init()
-
-import time
-
-def slow_eink_update():
-    time.sleep(0.5)
-    t.update()
 
 def color2string(color):
     if color == 0:
@@ -136,6 +147,9 @@ class Ugfx:
     justifyCenter = 1
     justifyRight = 2
 
+    def __init__(self, emulator=None):
+        self.emu=emulator
+
     def init(self):
         pass
 
@@ -143,13 +157,13 @@ class Ugfx:
         pass
 
     def clear(self, color):
-	eink.delete("all")
-        eink.configure(bg=color2string(color))
-        slow_eink_update()
+	self.emu.eink.delete("all")
+        self.emu.eink.configure(bg=color2string(color))
+        self.emu.slow_eink_update()
     
     def flush(self):
-	eink.delete("all")
-        slow_eink_update()
+	self.emu.eink.delete("all")
+        self.emu.slow_eink_update()
 
     def get_char_width(self, char, font):
         return self.get_string_width(char, font)
@@ -168,13 +182,13 @@ class Ugfx:
 
     def string(self, x, y, string, font, color):
         font, size, weight = native_font_lookup(font)
-        canvas_id = eink.create_text(x, y, anchor="nw")
-        eink.itemconfig(canvas_id, text=string, font=(font, size, weight), fill=color2string(color), width=780)
-        slow_eink_update()
+        canvas_id = self.emu.eink.create_text(x, y, anchor="nw")
+        self.emu.eink.itemconfig(canvas_id, text=string, font=(font, size, weight), fill=color2string(color), width=780)
+        self.emu.slow_eink_update()
 
     def string_box(self, x0, y0, x1, y1, string, font, color, justify):
         #self.box(x0, y0, x1-x0, y1-y0, color)
-	eink.create_rectangle(x0, y0, x1-x0, y1-y0, outline=color2string(color))
+	self.emu.eink.create_rectangle(x0, y0, x1-x0, y1-y0, outline=color2string(color))
         if justify == self.justifyLeft:
             self.string(x0, y0, string, font, color)
         elif justify == self.justifyCenter:
@@ -187,61 +201,61 @@ class Ugfx:
             self.string(begin, y0, string, font, color)
 
     def pixel(self, x, y, color):
-	eink.create_line(x, y, x + 1, y)
-        slow_eink_update()
+	self.emu.eink.create_line(x, y, x + 1, y)
+        self.emu.slow_eink_update()
 
     def line(self, x0, y0, x1, y1, color):
-	eink.create_line(x0, y0, x1, y1, fill=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color))
+        self.emu.slow_eink_update()
 
     def thickline(self, x0, y0, x1, y1, color, width, rnd):
-	eink.create_line(x0, y0, x1, y1, fill=color2string(color), width=width)
-        slow_eink_update()
+	self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color), width=width)
+        self.emu.slow_eink_update()
 
     def arc(self, x0, y0, r, a1, a2, color):
-	eink.create_arc(x0-r, y0-r, x0+r, y0+r, outline=color2string(color), start=a1, extent=a2)
-        slow_eink_update()
+	self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, outline=color2string(color), start=a1, extent=a2)
+        self.emu.slow_eink_update()
 
     def fill_arc(self, x0, y0, r, color, a1, a2):
-	eink.create_arc(x0-r, y0-r, x0+r, y0+r, fill=color2string(color), start=a1, extent=a2)
-        slow_eink_update()
+	self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, fill=color2string(color), start=a1, extent=a2)
+        self.emu.slow_eink_update()
 
     def circle(self, x0, y0, r, color):
-	eink.create_oval(x0-r, y0-r, x0+r, y0+r, outline=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, outline=color2string(color))
+        self.emu.slow_eink_update()
 
     def fill_circle(self, x0, y0, r, color):
-	eink.create_oval(x0-r, y0-r, x0+r, y0+r, fill=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, fill=color2string(color))
+        self.emu.slow_eink_update()
 
     def ellipse(self, x0, y0, a, b, color):
-	eink.create_oval(x0, y0, a, b, outline=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_oval(x0, y0, a, b, outline=color2string(color))
+        self.emu.slow_eink_update()
 
     def fill_ellipse(self, x0, y0, a, b, color):
-	eink.create_oval(x0, y0, a, b, fill=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_oval(x0, y0, a, b, fill=color2string(color))
+        self.emu.slow_eink_update()
 
     def polygon(self, x0, y0, color, points):
 	points = [(x+x0, y+y0) for x,y in points]
-	eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
-        slow_eink_update()
+	self.emu.eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
+        self.emu.slow_eink_update()
 
     def area(self, x0, y0, a, b, color):
-	eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
+        self.emu.slow_eink_update()
 
     def box(self, x0, y0, a, b, color):
-	eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
-        slow_eink_update()
+	self.emu.eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
+        self.emu.slow_eink_update()
 
     def rounded_box(self, x0, y0, a, b, r, color):
-	eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
-        slow_eink_update()
+	self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
+        self.emu.slow_eink_update()
 
     def fill_rounded_box(self, x0, y0, a, b, r, color):
-	eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), fill=color2string(color), smooth=True)
-        slow_eink_update()
+	self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), fill=color2string(color), smooth=True)
+        self.emu.slow_eink_update()
 
     def demo(self, string):
         self.clear(badge.WHITE)
@@ -326,21 +340,9 @@ class network:
         pass
 
 if __name__ == "__main__":
-
-    t = Tk()
-    t.title("SHA2017 badge")
-
-    frame = Frame(t)
-    frame.pack(fill=BOTH, expand=YES)
-    canvas = Canvas(frame, width=350, height=322, bg="black", highlightthickness=0)
-    background_image = ImageTk.PhotoImage(file="badge_background.png")
-    canvas.create_image(175, 161, image=background_image)
-    canvas.pack(fill=BOTH, expand=YES)
-
-    eink = Canvas(frame)
-
-    badge = Badge()
-    ugfx = Ugfx()
+    emu = Emulator()
+    badge = Badge(emu)
+    ugfx = Ugfx(emu)
 
     def run(argv):
         if len(argv) < 2:
@@ -349,7 +351,7 @@ if __name__ == "__main__":
             with file(argv[1],'r') as f:
                 script = f.read()
                 exec(script)
-                badge.run()
+                emu.t.mainloop()
 
     sys.exit(run(sys.argv))
 
