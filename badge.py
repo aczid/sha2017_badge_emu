@@ -359,10 +359,9 @@ if __name__ == "__main__":
         if len(argv) < 2:
             print "Usage: %s <demo.py>" % argv[0]
         else:
-            with file(argv[1],'r') as f:
-                script = f.read()
-                exec(script)
-                emu.interactive()
+	    l = locals()
+	    execfile(argv[1], globals(), globals())
+	    emu.interactive()
 
     sys.exit(run(sys.argv))
 
