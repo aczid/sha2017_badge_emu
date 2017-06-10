@@ -91,8 +91,11 @@ class Badge:
             x+=48
         pass
 
-    def led_set(self, led, hexcolor):
-        self.emu.canvas.itemconfig(self.leds[led], fill=hexcolor)
+    def leds_set_state(self, string):
+        for i, x in enumerate(range(0, len(string), 4)):
+            r,g,b,w = string[x:x+4]
+            hexcolor = "#%06x" % (ord(r)<<16|ord(g)<<8|ord(b))
+            self.emu.canvas.itemconfig(self.leds[5-i], fill=hexcolor)
         self.emu.t.update()
 
     def button_one_callback(self):
