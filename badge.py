@@ -1,5 +1,24 @@
-from Tkinter import *
-import tkFont
+import sys
+
+if sys.version_info[0] == 3:
+    from tkinter import *
+    import tkinter.font as tkFont
+
+    # Removed in Python 3
+    def execfile(filepath, globals=None, locals=None):
+        if globals is None:
+            globals = {}
+        globals.update({
+            "__file__": filepath,
+            "__name__": "__main__",
+        })
+        import os
+        with open(filepath, 'rb') as file:
+            exec(compile(file.read(), filepath, 'exec'), globals, locals)
+else:
+    from Tkinter import *
+    import tkFont
+
 from PIL import ImageTk, Image
 import time
 
@@ -81,7 +100,7 @@ class Badge:
         self.emu.t.update()
 
     def button_one_callback(self):
-        print "Button 1 pressed!"
+        print("Button 1 pressed!")
 
     def buttons_init(self):
         button_a = Button(self.emu.canvas, text="A", command=self.button_one_callback)
@@ -114,9 +133,9 @@ class Badge:
 
 def color2string(color):
     if color == 0:
-	return "black"
+        return "black"
     else:
-	return "white"
+        return "white"
 
 def native_font_lookup(font):
     lut = {'Roboto_BlackItalic24': ('Roboto', 24, 'italic'),
@@ -164,12 +183,12 @@ class Ugfx:
         pass
 
     def clear(self, color):
-	self.emu.eink.delete("all")
+        self.emu.eink.delete("all")
         self.emu.eink.configure(bg=color2string(color))
         self.emu.slow_eink_update()
     
     def flush(self):
-	self.emu.eink.delete("all")
+        self.emu.eink.delete("all")
         self.emu.slow_eink_update()
 
     def get_char_width(self, char, font):
@@ -195,7 +214,7 @@ class Ugfx:
 
     def string_box(self, x0, y0, x1, y1, string, font, color, justify):
         #self.box(x0, y0, x1-x0, y1-y0, color)
-	self.emu.eink.create_rectangle(x0, y0, x1-x0, y1-y0, outline=color2string(color))
+        self.emu.eink.create_rectangle(x0, y0, x1-x0, y1-y0, outline=color2string(color))
         if justify == self.justifyLeft:
             self.string(x0, y0, string, font, color)
         elif justify == self.justifyCenter:
@@ -208,60 +227,60 @@ class Ugfx:
             self.string(begin, y0, string, font, color)
 
     def pixel(self, x, y, color):
-	self.emu.eink.create_line(x, y, x + 1, y, fill=color2string(color))
+        self.emu.eink.create_line(x, y, x + 1, y, fill=color2string(color))
         #self.emu.slow_eink_update()
 
     def line(self, x0, y0, x1, y1, color):
-	self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color))
+        self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color))
         self.emu.slow_eink_update()
 
     def thickline(self, x0, y0, x1, y1, color, width, rnd):
-	self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color), width=width)
+        self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color), width=width)
         self.emu.slow_eink_update()
 
     def arc(self, x0, y0, r, a1, a2, color):
-	self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, outline=color2string(color), start=a1, extent=a2)
+        self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, outline=color2string(color), start=a1, extent=a2)
         self.emu.slow_eink_update()
 
     def fill_arc(self, x0, y0, r, color, a1, a2):
-	self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, fill=color2string(color), start=a1, extent=a2)
+        self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, fill=color2string(color), start=a1, extent=a2)
         self.emu.slow_eink_update()
 
     def circle(self, x0, y0, r, color):
-	self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, outline=color2string(color))
+        self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, outline=color2string(color))
         self.emu.slow_eink_update()
 
     def fill_circle(self, x0, y0, r, color):
-	self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, fill=color2string(color))
+        self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, fill=color2string(color))
         self.emu.slow_eink_update()
 
     def ellipse(self, x0, y0, a, b, color):
-	self.emu.eink.create_oval(x0, y0, a, b, outline=color2string(color))
+        self.emu.eink.create_oval(x0, y0, a, b, outline=color2string(color))
         self.emu.slow_eink_update()
 
     def fill_ellipse(self, x0, y0, a, b, color):
-	self.emu.eink.create_oval(x0, y0, a, b, fill=color2string(color))
+        self.emu.eink.create_oval(x0, y0, a, b, fill=color2string(color))
         self.emu.slow_eink_update()
 
     def polygon(self, x0, y0, color, points):
-	points = [(x+x0, y+y0) for x,y in points]
-	self.emu.eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
+        points = [(x+x0, y+y0) for x,y in points]
+        self.emu.eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
         self.emu.slow_eink_update()
 
     def area(self, x0, y0, a, b, color):
-	self.emu.eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
+        self.emu.eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
         self.emu.slow_eink_update()
 
     def box(self, x0, y0, a, b, color):
-	self.emu.eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
+        self.emu.eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
         self.emu.slow_eink_update()
 
     def rounded_box(self, x0, y0, a, b, r, color):
-	self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
+        self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
         self.emu.slow_eink_update()
 
     def fill_rounded_box(self, x0, y0, a, b, r, color):
-	self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), fill=color2string(color), smooth=True)
+        self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), fill=color2string(color), smooth=True)
         self.emu.slow_eink_update()
 
     def demo(self, string):
@@ -347,7 +366,6 @@ class Network:
         pass
 
 if __name__ == "__main__":
-    import sys
     emu = Emulator()
     badge = Badge(emu)
     ugfx = Ugfx(emu)
@@ -357,10 +375,10 @@ if __name__ == "__main__":
 
     def run(argv):
         if len(argv) < 2:
-            print "Usage: %s <demo.py>" % argv[0]
+            print("Usage: %s <demo.py>" % argv[0])
         else:
-	    execfile(argv[1], globals(), globals())
-	    emu.interactive()
+            execfile(argv[1], globals(), globals())
+            emu.interactive()
 
     sys.exit(run(sys.argv))
 
