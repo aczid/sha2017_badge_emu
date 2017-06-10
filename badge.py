@@ -50,9 +50,6 @@ class Emulator:
 
 class Badge:
 
-    BLACK = 0
-    WHITE = 1
-
     pictures = [
         'pic_1.png',
         'pic_2.png',
@@ -73,7 +70,6 @@ class Badge:
     def display_picture(self, a, b):
         self.badge_image_photo = ImageTk.PhotoImage(file=self.pictures[a])
         self.emu.eink.create_image(148, 64, image=self.badge_image_photo)
-        self.emu.slow_eink_update()
 
     def power_init(self):
         pass
@@ -128,6 +124,7 @@ class Badge:
 
     def __init__(self, emulator=None):
         self.emu=emulator
+        self.eink_init()
         self.leds_init()
         self.buttons_init()
 
@@ -169,6 +166,9 @@ def polygonpoints(x1, y1, x2, y2, radius):
 
 class Ugfx:
 
+    BLACK = 0
+    WHITE = 1
+
     justifyLeft = 0
     justifyCenter = 1
     justifyRight = 2
@@ -185,10 +185,8 @@ class Ugfx:
     def clear(self, color):
         self.emu.eink.delete("all")
         self.emu.eink.configure(bg=color2string(color))
-        self.emu.slow_eink_update()
     
     def flush(self):
-        self.emu.eink.delete("all")
         self.emu.slow_eink_update()
 
     def get_char_width(self, char, font):
@@ -210,7 +208,6 @@ class Ugfx:
         font, size, weight = native_font_lookup(font)
         canvas_id = self.emu.eink.create_text(x, y, anchor="nw")
         self.emu.eink.itemconfig(canvas_id, text=string, font=(font, size, weight), fill=color2string(color), width=780)
-        self.emu.slow_eink_update()
 
     def string_box(self, x0, y0, x1, y1, string, font, color, justify):
         #self.box(x0, y0, x1-x0, y1-y0, color)
@@ -228,74 +225,60 @@ class Ugfx:
 
     def pixel(self, x, y, color):
         self.emu.eink.create_line(x, y, x + 1, y, fill=color2string(color))
-        #self.emu.slow_eink_update()
 
     def line(self, x0, y0, x1, y1, color):
         self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color))
-        self.emu.slow_eink_update()
 
     def thickline(self, x0, y0, x1, y1, color, width, rnd):
         self.emu.eink.create_line(x0, y0, x1, y1, fill=color2string(color), width=width)
-        self.emu.slow_eink_update()
 
     def arc(self, x0, y0, r, a1, a2, color):
         self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, outline=color2string(color), start=a1, extent=a2)
-        self.emu.slow_eink_update()
 
     def fill_arc(self, x0, y0, r, color, a1, a2):
         self.emu.eink.create_arc(x0-r, y0-r, x0+r, y0+r, fill=color2string(color), start=a1, extent=a2)
-        self.emu.slow_eink_update()
 
     def circle(self, x0, y0, r, color):
         self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, outline=color2string(color))
-        self.emu.slow_eink_update()
 
     def fill_circle(self, x0, y0, r, color):
         self.emu.eink.create_oval(x0-r, y0-r, x0+r, y0+r, fill=color2string(color))
-        self.emu.slow_eink_update()
 
     def ellipse(self, x0, y0, a, b, color):
         self.emu.eink.create_oval(x0, y0, a, b, outline=color2string(color))
-        self.emu.slow_eink_update()
 
     def fill_ellipse(self, x0, y0, a, b, color):
         self.emu.eink.create_oval(x0, y0, a, b, fill=color2string(color))
-        self.emu.slow_eink_update()
 
     def polygon(self, x0, y0, color, points):
         points = [(x+x0, y+y0) for x,y in points]
         self.emu.eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
-        self.emu.slow_eink_update()
 
     def area(self, x0, y0, a, b, color):
         self.emu.eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
-        self.emu.slow_eink_update()
 
     def box(self, x0, y0, a, b, color):
         self.emu.eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
-        self.emu.slow_eink_update()
 
     def rounded_box(self, x0, y0, a, b, r, color):
         self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
-        self.emu.slow_eink_update()
 
     def fill_rounded_box(self, x0, y0, a, b, r, color):
         self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), fill=color2string(color), smooth=True)
-        self.emu.slow_eink_update()
 
     def demo(self, string):
-        self.clear(badge.WHITE)
-        self.string(150,25,"STILL","Roboto_BlackItalic24",badge.BLACK)
-        self.string(130,50,string,"PermanentMarker22",badge.BLACK)
-        length = ugfx.get_string_width("Hacking","PermanentMarker22")
-        self.line(127+3,50+22,127+3+length+14, 50+22, badge.BLACK)
-        self.line(127+3+length+10,50+2,127+3+length+10, 50+22, badge.BLACK)
-        self.string(140,75,"Anyway","Roboto_BlackItalic24",badge.BLACK)
-        self.fill_circle(60, 60, 50, badge.BLACK)
-        self.fill_circle(60, 60, 40, badge.WHITE)
-        self.fill_circle(60, 60, 30, badge.BLACK)
-        self.fill_circle(60, 60, 20, badge.WHITE)
-        self.fill_circle(60, 60, 10, badge.BLACK)
+        self.clear(self.WHITE)
+        self.string(150,25,"STILL","Roboto_BlackItalic24",self.BLACK)
+        self.string(130,50,string,"PermanentMarker22",self.BLACK)
+        length = ugfx.get_string_width(string,"PermanentMarker22")
+        self.line(127+3,50+22,127+3+length+14, 50+22, self.BLACK)
+        self.line(127+3+length+10,50+2,127+3+length+10, 50+22, self.BLACK)
+        self.string(140,75,"Anyway","Roboto_BlackItalic24",self.BLACK)
+        self.fill_circle(60, 60, 50, self.BLACK)
+        self.fill_circle(60, 60, 40, self.WHITE)
+        self.fill_circle(60, 60, 30, self.BLACK)
+        self.fill_circle(60, 60, 20, self.WHITE)
+        self.fill_circle(60, 60, 10, self.BLACK)
         self.flush()
 
 class Esp:

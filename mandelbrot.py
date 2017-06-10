@@ -1,4 +1,6 @@
 # Based on http://0pointer.de/blog/projects/mandelbrot.html
+#import badge
+#import ugfx
 dimensions = (badge.BADGE_EINK_WIDTH, badge.BADGE_EINK_HEIGHT)
 scale = 1.0/(dimensions[0]/3)
 center = [2.2, 1.5]       # Use this for Mandelbrot set
@@ -24,7 +26,7 @@ for y in xrange(dimensions[1]):
         #n = iterate_mandelbrot(complex(0.3, 0.6), c)  # Use this for Julia set
 
         if n is None:
-            ugfx.pixel(x, y, badge.BLACK)
+            ugfx.pixel(x, y, ugfx.BLACK)
         else:
-            ugfx.pixel(x, y, badge.WHITE)
-
+            ugfx.pixel(x, y, ugfx.WHITE)
+ugfx.flush()
