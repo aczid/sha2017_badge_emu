@@ -258,10 +258,10 @@ class Ugfx:
         self.emu.eink.create_polygon(points, fill=fill, outline=outline, smooth=True)
 
     def area(self, x0, y0, a, b, color):
-        self.emu.eink.create_rectangle(x0, y0, a, b, fill=color2string(color))
+        self.emu.eink.create_rectangle(x0, y0, x0+a, y0+b, fill=color2string(color))
 
     def box(self, x0, y0, a, b, color):
-        self.emu.eink.create_rectangle(x0, y0, a, b, outline=color2string(color))
+        self.emu.eink.create_rectangle(x0, y0, x0+a, y0+b, outline=color2string(color))
 
     def rounded_box(self, x0, y0, a, b, r, color):
         self.emu.eink.create_polygon(polygonpoints(x0, y0, x0+a, y0+b, r), outline=color2string(color), smooth=True)
